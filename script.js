@@ -1,32 +1,50 @@
-let menu = document.querySelector('#menu-bar');
-let navbar = document.querySelector('.navbar');
-
-menu.onclick = () =>{
-
-  menu.classList.toggle('fa-times');
-  navbar.classList.toggle('active');
+let weather = {
+    apiKey: "API KEY GOES HERE",
+    fetchWeather: function (city) {
+      fetch(
+        "https://api.openweathermap.org/data/2.5/weather?q=" +
+          city +
+          "&units=metric&appid=" +
+          this.apiKey
+      )
+      
+    
+    },
+    displayWeather: function (data) {
+      const { name } = data;
+      const { icon, description } = data.weather[0];
+      const { temp, humidity } = data.main;
+      const { speed } = data.wind;
+      document.querySelector(".city").innerText = "Weather in " + name;
+      document.querySelector(".icon").src =
+        "https://openweathermap.org/img/wn/" + icon + ".png";
+      document.querySelector(".description").innerText = description;
+      document.querySelector(".temp").innerText = temp + "°C";
+      document.querySelector(".humidity").innerText =
+        "Humidity: " + humidity + "%";
+      document.querySelector(".wind").innerText =
+        "Wind speed: " + speed + " km/h";
+      document.querySelector(".weather").classList.remove("loading");
+      document.body.style.backgroundImage =
+        "url('https://source.unsplash.com/1600x900/?" + name + "')";
+    },
+    search: function () {
+      this.fetchWeather(document.querySelector(".search-bar").value);
+    },
+  };
+  
+  document.querySelector(".search button").addEventListener("click", function () {
+    weather.search();
+  });
+  
+  document
+    .querySelector(".search-bar")
+    .addEventListener("keyup", function (event) {
+      if (event.key == "Enter") {
+        weather.search();
+      }
+    });
+  
+  weather.fetchWeather("Denver");
  
-}
-
-window.onscroll = () =>{
-
-  menu.classList.remove('fa-times');
-  navbar.classList.remove('active');
-
-  if(window.scrollY > 60){
-    document.querySelector('#scroll-top').classList.add('active');
-  }else{
-    document.querySelector('#scroll-top').classList.remove('active');
-  }
-
-}
-
-function loader(){
-  document.querySelector('.loader-container').classList.add('fade-out');
-}
-
-function fadeOut(){
-  setInterval(loader, 3000);
-}
-
-window.onload = fadeOut();
+  
